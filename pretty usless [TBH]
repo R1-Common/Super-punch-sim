@@ -1,0 +1,99 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "Super punch Sim",
+    LoadingTitle = "PJEX is so cool",
+    LoadingSubtitle = "by PJEX",
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = nil,
+        FileName = "uglyfatmonkeySUPERPUNCHSIMISBAD"
+    },
+    Discord = {
+        Enabled = false,
+        Invite = "noinvitelink",
+        RememberJoins = true
+    },
+    KeySystem = false,
+    KeySettings = {
+        Title = "Untitled",
+        Subtitle = "Key System",
+        Note = "No method of obtaining the key is provided",
+        FileName = "Key",
+        SaveKey = true,
+        GrabKeyFromSite = false,
+        Key = {"Hello"}
+    }
+})
+
+local MainTab = Window:CreateTab("Main", nil)
+local MainSection = MainTab:CreateSection("Main")
+
+local function PunchCallback(success)
+    -- Handle the success or failure response from the server here
+    print("Punch success:", success)
+end
+
+local loopRunning = false
+
+local Toggle = MainTab:CreateToggle({
+    Name = "Auto Punch",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(value)
+        loopRunning = value
+        if loopRunning then
+            while loopRunning do
+                local currentEnv = getfenv(0)
+                local game = currentEnv.game
+                if game and game:GetService("ReplicatedStorage") then
+                    local replicatedStorage = game:GetService("ReplicatedStorage")
+                    local functions = replicatedStorage:WaitForChild("Functions")
+                    local punchFunction = functions:WaitForChild("Punch")
+                    punchFunction:InvokeServer(3, PunchCallback)
+                end
+                wait()
+            end
+        end
+    end
+})
+
+local Button = MainTab:CreateButton({
+   Name = "Anti afk",
+   Callback = function()
+   -- Configuration
+local AFK_TIME_THRESHOLD = 300 -- Time in seconds after which the player is considered AFK
+local MAX_RANDOM_DELAY = 30 -- Maximum random delay in seconds between key presses
+
+-- Variables
+local player = game.Players.LocalPlayer
+local userInputService = game:GetService("UserInputService")
+local lastActivityTime = tick()
+
+-- Function to handle key press
+local function PressKey()
+    userInputService:PressKey(Enum.KeyCode.W) -- Press any desired key
+end
+
+-- Function to reset last activity time
+local function ResetActivityTime()
+    lastActivityTime = tick()
+end
+
+-- Main loop
+while true do
+    if tick() - lastActivityTime >= AFK_TIME_THRESHOLD then
+        -- Player is AFK, simulate key press
+        PressKey()
+    end
+
+    -- Reset last activity time whenever there is user input
+    userInputService.InputBegan:Connect(ResetActivityTime)
+
+    -- Add random delay between key presses to avoid detection
+    local randomDelay = math.random(1, MAX_RANDOM_DELAY)
+    wait(randomDelay)
+end
+
+   end,
+})
